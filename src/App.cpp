@@ -30,7 +30,7 @@ void App::init() {
 
 void App::run() {
 	while(!glfwWindowShouldClose(graphicsManager.window)) {
-		if(*(player.inputManager.getKeyState(GLFW_KEY_Q)) == true) {
+		if(player.inputManager.getKeyState(GLFW_KEY_Q)) {
 			glfwSetWindowShouldClose(graphicsManager.window, true);
 		}
 

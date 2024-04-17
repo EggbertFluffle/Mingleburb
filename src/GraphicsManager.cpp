@@ -100,6 +100,7 @@ void GraphicsManager::initializeGLFW() {
 	glfwMakeContextCurrent(window);
 
 	glfwSetFramebufferSizeCallback(window, windowResizeCallback);
+	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)Global::propogateMouseCallback);
 	glfwSetKeyCallback(window, (GLFWkeyfun)Global::propogateKeyCallback);
 }
 

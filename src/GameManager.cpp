@@ -4,7 +4,9 @@
 GameManager::GameManager() {}
 
 void GameManager::cullFaces(int x, int y, int z) {
-	Block* block = &(blocks[z][y][x]);
+	Block* block = getBlock(x, y, z);
+	if(block == nullptr) return;
+
 	block->faces = 0b00000000;
 	if(block->air) return;
 	
@@ -46,4 +48,13 @@ Block* GameManager::getBlock(int x, int y, int z) {
 		return nullptr;
 	}
 	return &(blocks[z][y][x]);
+}
+
+void GameManager::cullSurroundingBlocks(glm::vec3& selectedBlockCoords) {
+	cullFaces(selectedBlockCoords.x + 1, selectedBlockCoords.y, selectedBlockCoords.z);
+	cullFaces(selectedBlockCoords.x - 1, selectedBlockCoords.y, selectedBlockCoords.z);
+	cullFaces(selectedBlockCoords.x, selectedBlockCoords.y + 1, selectedBlockCoords.z);
+	cullFaces(selectedBlockCoords.x, selectedBlockCoords.y - 1, selectedBlockCoords.z);
+	cullFaces(selectedBlockCoords.x, selectedBlockCoords.y, selectedBlockCoords.z + 1);
+	cullFaces(selectedBlockCoords.x, selectedBlockCoords.y, selectedBlockCoords.z - 1);
 }

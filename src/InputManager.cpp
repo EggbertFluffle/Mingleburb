@@ -13,8 +13,22 @@ void InputManager::setKeyFalse(int key) {
 	keyStates[key] = false;
 }
 
-bool* InputManager::getKeyState(int key) {
-	return &(keyStates[key]);
+bool InputManager::getKeyState(int key) {
+	return keyStates[key];
+}
+
+bool InputManager::getMouseButton(int button) {
+	switch(button) {
+		case GLFW_MOUSE_BUTTON_1:
+			return mouseButton1;
+			break;
+		case GLFW_MOUSE_BUTTON_2:
+			return mouseButton2;
+			break;
+		default: 
+			return false;
+			break;
+	}
 }
 
 void InputManager::keyCallback(GLFWwindow* window, int* key, int* scancode, int* action, int* mods) {
@@ -22,6 +36,17 @@ void InputManager::keyCallback(GLFWwindow* window, int* key, int* scancode, int*
 		setKeyTrue(*key);
 	} else {
 		setKeyFalse(*key);
+	}
+}
+
+void InputManager::mouseCallback(GLFWwindow* window, int* button, int* action, int* mods) {
+	switch(*button) {
+		case GLFW_MOUSE_BUTTON_1:
+			mouseButton1 = *action;
+			break;
+		case GLFW_MOUSE_BUTTON_2:
+			mouseButton2 = *action;
+			break;
 	}
 }
 

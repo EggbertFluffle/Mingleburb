@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "Block.hpp"
 #include "Globals.hpp"
 
@@ -9,5 +11,6 @@ public:
 
 	GameManager();
 	void cullFaces(int x, int y, int z);
+	void cullSurroundingBlocks(glm::vec3& selectedBlockCoords);
 	Block* getBlock(int x, int y, int z);
 };

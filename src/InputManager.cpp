@@ -18,16 +18,10 @@ bool* InputManager::getKeyState(int key) {
 }
 
 void InputManager::keyCallback(GLFWwindow* window, int* key, int* scancode, int* action, int* mods) {
-	if((*key == GLFW_KEY_Q || *key == GLFW_KEY_ESCAPE) && *action == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	if (*action) {
+		setKeyTrue(*key);
 	} else {
-		if (*action == GLFW_PRESS) {
-			setKeyTrue(*key);
-		} 
-		
-		if (*action == GLFW_RELEASE){
-			setKeyFalse(*key);
-		}
+		setKeyFalse(*key);
 	}
 }
 
@@ -36,5 +30,5 @@ void InputManager::captureCursor(GLFWwindow* window) {
 	glfwGetCursorPos(window, &mouseX, &mouseY);
 	deltaMouse.x = static_cast<float>(mouseX) - (WIDTH / 2.0f);
 	deltaMouse.y = static_cast<float>(mouseY) - (HEIGHT / 2.0f);
-	glfwSetCursorPos(window, WIDTH / 2, HEIGHT / 2);
+	glfwSetCursorPos(window, static_cast<int>(WIDTH / 2), static_cast<int>(HEIGHT / 2));
 }

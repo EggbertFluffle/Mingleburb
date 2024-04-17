@@ -9,4 +9,5 @@ public:
 
 	GameManager();
 	void cullFaces(int x, int y, int z);
+	Block* getBlock(int x, int y, int z);
 };

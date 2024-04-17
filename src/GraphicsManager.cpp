@@ -1,12 +1,19 @@
-
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <string>
 
+#include "Globals.hpp"
 #include "GraphicsManager.hpp"
 #include "Block.hpp"
 #include "stb_image.hpp"
 
 GraphicsManager::GraphicsManager() {
+	initializeGLFW();
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		printf("Failed to initialize GLAD\n");
+	} 
+
 	glEnable(GL_DEPTH_TEST);
 
 	for(char i = 0; i < 6; i++) {
@@ -34,6 +41,21 @@ GraphicsManager::GraphicsManager() {
 		glEnableVertexAttribArray(1);
 	}
 
+	loadTexture("dirt", "./src/assets/dirt.png");
+	loadTexture("pink_wool", "./src/assets/pink_wool.png");
+	loadTexture("oak_planks", "./src/assets/oak_planks.png");
+
+	shader.compileShaders("./src/shaders/vertex.glsl", "./src/shaders/fragment.glsl");
+
+	projection = glm::perspective(glm::radians(75.0f), (float)WIDTH/(float)HEIGHT, 0.1f, 100.0f);
+
+	shader.setMat4("projection", projection);
+
+	shader.useShader();
+}
+
+GraphicsManager::~GraphicsManager() {
+	glfwTerminate();
 }
 
 void GraphicsManager::loadTexture(std::string name, std::string path) {
@@ -46,7 +68,7 @@ void GraphicsManager::loadTexture(std::string name, std::string path) {
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texWidth, texHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
 	glGenerateMipmap(GL_TEXTURE_2D);
-	
+
 	// Texture options get set for each axis
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -58,9 +80,27 @@ void GraphicsManager::loadTexture(std::string name, std::string path) {
 
 	textures[name] = texture;
 
-	printf("%s is equal to %d\n", name.c_str(), textures[name]);
-
 	stbi_image_free(textureData);
+}
+
+void GraphicsManager::initializeGLFW() {
+	glfwInit();
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Mingelburb", NULL, NULL);
+	if (window == NULL) {
+		printf("Failed to create GLFW window\n");
+		glfwTerminate();
+		return;
+	}
+	glfwMakeContextCurrent(window);
+
+	glfwSetFramebufferSizeCallback(window, windowResizeCallback);
+	glfwSetKeyCallback(window, (GLFWkeyfun)Global::propogateKeyCallback);
 }
 
 void GraphicsManager::bindTexture(std::string name) {
@@ -70,3 +110,5 @@ void GraphicsManager::bindTexture(std::string name) {
 void GraphicsManager::bindFace(int face) {
 	glBindVertexArray(blockFaceVAOs[face]);
 }
+
+

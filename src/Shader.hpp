@@ -10,14 +10,13 @@
 #include <glm/gtc/type_ptr.hpp>
 
 class Shader {
-private:
-	std::string loadShaderSource(const char* path);
-	unsigned int compileShaders(const char* vertexShaderPath, const char* fragmentShaderPath);
+unsigned int id;
 
-	unsigned int id;
+std::string loadShaderSource(const char* path);
+
 public:
-	Shader(const char* vertexShaderPath, const char* fragmentShaderPath);
-
+	void compileShaders(const char* vertexShaderPath, const char* fragmentShaderPath);
+	void setBoolean(const char* name, bool value);
 	void setInt(const char* name, int value);
 	void setFloat(const char* name, float value);
 	void setVec2(const char* name, float xValue, float yValue);

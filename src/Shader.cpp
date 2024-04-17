@@ -10,12 +10,12 @@
 
 #include "./Shader.hpp"
 
-Shader::Shader(const char* vertexShaderPath, const char* fragmentShaderPath) {
-	id = compileShaders(vertexShaderPath, fragmentShaderPath);
-}
-
 void Shader::useShader() {
 	glUseProgram(id);
+}
+
+void Shader::setBoolean(const char* name, bool value) {
+	glUniform1i(glGetUniformLocation(id, name), value);
 }
 
 void Shader::setInt(const char* name, int value) {
@@ -52,20 +52,17 @@ std::string Shader::loadShaderSource(const char* path) {
 	return ss.str();
 }
 
-unsigned int Shader::compileShaders(const char* vertexShaderPath, const char* fragmentShaderPath) {
-	// Create a shader and assign its id to vertexShader 
+void Shader::compileShaders(const char* vertexShaderPath, const char* fragmentShaderPath) {
 	unsigned int vertexShader;
-	// Make the shader of type GL_VERTEX_SHADER 
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	// Copy the shader source code into it's OpenGL object memory
-	// the second argument is the number of source code strings we are passing
-	// TODO: COULD PROBABLY BE SOLVED WITH HEAP MEMORY MANAGEMENT
+
 	std::string vertexShaderSource = loadShaderSource(vertexShaderPath);
 	const char* vertexShaderSourcePointer = vertexShaderSource.c_str();
+
 	glShaderSource(vertexShader, 1, &vertexShaderSourcePointer, NULL);
 
-	int shaderStatus;
 	glCompileShader(vertexShader);
+	int shaderStatus;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &shaderStatus);
 	if(!shaderStatus) {
 		char compilationLog[512];
@@ -75,12 +72,14 @@ unsigned int Shader::compileShaders(const char* vertexShaderPath, const char* fr
 
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	// TODO: COULD PROBABLY BE SOLVED WITH HEAP MEMORY MANAGEMENT
+
 	std::string fragmentShaderSource = loadShaderSource(fragmentShaderPath);
 	const char* fragmentShaderSourcePointer = fragmentShaderSource.c_str();
+
 	glShaderSource(fragmentShader, 1, &fragmentShaderSourcePointer, NULL);
 
 	glCompileShader(fragmentShader);
+
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &shaderStatus);
 	if(!shaderStatus) {
 		char compilationLog[512];
@@ -88,12 +87,13 @@ unsigned int Shader::compileShaders(const char* vertexShaderPath, const char* fr
 		printf("Fragment shader compilation failed with the provided error:\n %s", compilationLog);
 	}
 
-	// Combine the shaders into a shaderProgram object and add both shaders
 	unsigned int shaderProgram;
 	shaderProgram = glCreateProgram();
+
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
+
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &shaderStatus);
 	if(!shaderStatus) {
 		char linkingLog[512];
@@ -101,9 +101,8 @@ unsigned int Shader::compileShaders(const char* vertexShaderPath, const char* fr
 		printf("Shader program linking error:\n %s", linkingLog);
 	}
 
-	// Free the vertex and fragment shaders from memory
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	return shaderProgram;
+	id = shaderProgram;
 }

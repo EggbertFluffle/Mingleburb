@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "GameManager.hpp"
 #include "Block.hpp"
 
@@ -41,4 +39,11 @@ void GameManager::cullFaces(int x, int y, int z) {
 	}
 
 	block->faces = ~block->faces;
+}
+
+Block* GameManager::getBlock(int x, int y, int z) {
+	if (x < 0 || x > CHUNK_WIDTH - 1 || y < 0 || y > BUILD_HEIGHT - 1 || z < 0 || z > CHUNK_WIDTH - 1) {
+		return nullptr;
+	}
+	return &(blocks[z][y][x]);
 }

@@ -89,7 +89,6 @@ void Player::propogateMouseCallback(GLFWwindow* window, int* button, int* action
 
 void Player::castBlockRay(GameManager* gameManager) {
 	Block* block;
-	printf("lookDir: (%f, %f, %f)\n", lookDir.x, lookDir.y, lookDir.z);
 	for(float a = 0; a < 1.0f; a += 0.01f) {
 		glm::vec3 reach(
 			position.x + (lookDir.x * viewDistance) * a,

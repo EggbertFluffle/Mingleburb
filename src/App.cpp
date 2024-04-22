@@ -3,6 +3,7 @@
 
 #include "Globals.hpp"
 #include "App.hpp"
+#include "Perlin.h"
 
 App::App() :
 	player(CHUNK_WIDTH / 2.0f, BUILD_HEIGHT / 2.0f, CHUNK_WIDTH / 2.0f, PI / 2.0f, 0.0f),
@@ -11,10 +12,15 @@ App::App() :
 {}
 
 void App::init() {
+	perlinOffsets* po = createPerlinOffsets(8);
+	float w = static_cast<float>(CHUNK_WIDTH);
+	float b = static_cast<float>(BUILD_HEIGHT);
+
 	for(int z = 0; z < CHUNK_WIDTH - 1; z++) {
 		for(int y = 0; y < BUILD_HEIGHT - 1; y++) {
 			for(int x = 0; x < CHUNK_WIDTH - 1; x++) {
-				if (y < 32) gameManager.blocks[z][y][x] = Block("dirt");
+				int height = static_cast<int>(b) * (getPerlinNoise(po, static_cast<float>(z / w) * 8) + 1) / 2.0f;
+				if (y < height) gameManager.blocks[z][y][x] = Block("dirt");
 			}
 		}
 	}

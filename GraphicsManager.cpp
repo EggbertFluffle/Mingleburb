@@ -16,7 +16,7 @@ GraphicsManager::GraphicsManager() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	for(char i = 0; i < 6; i++) {
+	for(int i = 0; i < 6; i++) {
 		glGenVertexArrays(1, &blockFaceVAOs[i]);
 
 		glBindVertexArray(blockFaceVAOs[i]);
@@ -41,11 +41,11 @@ GraphicsManager::GraphicsManager() {
 		glEnableVertexAttribArray(1);
 	}
 
-	loadTexture("dirt", "./src/assets/dirt.png");
-	loadTexture("pink_wool", "./src/assets/pink_wool.png");
-	loadTexture("oak_planks", "./src/assets/oak_planks.png");
+	loadTexture("dirt", "./assets/dirt.png");
+	loadTexture("pink_wool", "./assets/pink_wool.png");
+	loadTexture("oak_planks", "./assets/oak_planks.png");
 
-	shader.compileShaders("./src/shaders/vertex.glsl", "./src/shaders/fragment.glsl");
+	shader.compileShaders("./shaders/vertex.glsl", "./shaders/fragment.glsl");
 
 	projection = glm::perspective(glm::radians(75.0f), (float)WIDTH/(float)HEIGHT, 0.1f, 100.0f);
 

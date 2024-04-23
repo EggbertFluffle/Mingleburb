@@ -94,11 +94,11 @@ const int RECT_INDICES[] = {
 };
 
 struct Block {
-	unsigned char faces;
 	std::string texture;
-	bool highlighted;
 	bool air;
+	unsigned char faces;
+	bool highlighted;
 
-	Block() : texture(""), air(true), faces(0b00000000) {};
+	Block() : texture(), air(true), faces(0b00000000) {};
 	Block(const char* textureName) : texture(textureName), air(false), faces(0b00000000) {};
 };

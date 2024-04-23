@@ -38,13 +38,14 @@ void Shader::setMat4(const char* name, glm::mat4 &mat) {
 	glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-std::string Shader::loadShaderSource(const char* path) {
+std::string Shader::loadShaderSource(const char* path, int& shaderStatus) {
 	std::ifstream input(path);
 	if(!input.is_open()) {
 		printf("Couldnt open shader file \"%s\"", path);
-		return NULL;
+		shaderStatus = -1;
+		return "ERROR";
 	}
-	
+
 	std::stringstream ss;
 	ss << input.rdbuf();
 	input.close();
@@ -53,16 +54,21 @@ std::string Shader::loadShaderSource(const char* path) {
 }
 
 void Shader::compileShaders(const char* vertexShaderPath, const char* fragmentShaderPath) {
+	int shaderStatus;
+
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-	std::string vertexShaderSource = loadShaderSource(vertexShaderPath);
+	std::string vertexShaderSource = loadShaderSource(vertexShaderPath, shaderStatus);
+	if(shaderStatus == -1) {
+		printf("ERROR: cannot find shader file at path: \"%s\"\n", vertexShaderPath);
+	}
+
 	const char* vertexShaderSourcePointer = vertexShaderSource.c_str();
 
 	glShaderSource(vertexShader, 1, &vertexShaderSourcePointer, NULL);
 
 	glCompileShader(vertexShader);
-	int shaderStatus;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &shaderStatus);
 	if(!shaderStatus) {
 		char compilationLog[512];
@@ -73,11 +79,14 @@ void Shader::compileShaders(const char* vertexShaderPath, const char* fragmentSh
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-	std::string fragmentShaderSource = loadShaderSource(fragmentShaderPath);
+	std::string fragmentShaderSource = loadShaderSource(fragmentShaderPath, shaderStatus);
+	if(shaderStatus == -1) {
+		printf("ERROR: cannot find shader file at path: \"%s\"\n", fragmentShaderPath);
+	}
 	const char* fragmentShaderSourcePointer = fragmentShaderSource.c_str();
 
 	glShaderSource(fragmentShader, 1, &fragmentShaderSourcePointer, NULL);
-
+ 
 	glCompileShader(fragmentShader);
 
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &shaderStatus);

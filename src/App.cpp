@@ -12,14 +12,14 @@ App::App() :
 {}
 
 void App::init() {
-	perlinOffsets* po = createPerlinOffsets(8);
+	perlinOffsets* po = createPerlinOffsets(NOISE_OCTAVES);
 	float w = static_cast<float>(CHUNK_WIDTH);
 	float b = static_cast<float>(BUILD_HEIGHT);
 
 	for(int z = 0; z < CHUNK_WIDTH - 1; z++) {
 		for(int y = 0; y < BUILD_HEIGHT - 1; y++) {
 			for(int x = 0; x < CHUNK_WIDTH - 1; x++) {
-				int height = static_cast<int>(b) * (getPerlinNoise(po, static_cast<float>(z / w) * 8) + 1) / 2.0f;
+				int height = BUILD_HEIGHT * ((getPerlinNoise(po, (z / w) * NOISE_FREQUENCY, (x / w) * NOISE_FREQUENCY) / 2) + 0.5f);
 				if (y < height) gameManager.blocks[z][y][x] = Block("dirt");
 			}
 		}

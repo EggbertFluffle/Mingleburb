@@ -4,13 +4,15 @@ in vec2 fTex;
 
 out vec4 FragColor;
 
-uniform sampler2D dirtTexture;
+uniform sampler2D loadedTexture;
 uniform bool highlighted;
 
+uniform float luminence;
+
 void main() {
+	FragColor = texture(loadedTexture, fTex);
+	FragColor = mix(FragColor, vec4(0.0f, 0.0f, 0.0f, 1.0f), luminence);
 	if(highlighted) {
-		FragColor = mix(texture(dirtTexture, fTex), vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f);
-	} else {
-		FragColor = texture(dirtTexture, fTex);
+		FragColor = mix(FragColor, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f);
 	}
 }

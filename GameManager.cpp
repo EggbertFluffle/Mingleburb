@@ -1,7 +1,27 @@
+#include <glm/geometric.hpp>
+#include <glm/glm.hpp>
+#include <stdio.h>
+
 #include "GameManager.hpp"
 #include "Block.hpp"
 
-GameManager::GameManager() {}
+GameManager::GameManager() {
+	// glm::vec3 directionalLight(1, 0, 0);
+	glm::vec3 directionalLight(1, -0.5, 0);
+	directionalLight = glm::normalize(directionalLight);
+	// Terrible name
+	float brightnessChop = 3.0f;
+	faceLuminence[0] = (glm::dot(directionalLight, glm::vec3(1, 0, 0)) + 1) / brightnessChop;
+	faceLuminence[1] = (glm::dot(directionalLight, glm::vec3(-1, 0, 0)) + 1) / brightnessChop;
+	faceLuminence[2] = (glm::dot(directionalLight, glm::vec3(0, 1, 0)) + 1) / brightnessChop;
+	faceLuminence[3] = (glm::dot(directionalLight, glm::vec3(0, -1, 0)) + 1) / brightnessChop;
+	faceLuminence[4] = (glm::dot(directionalLight, glm::vec3(0, 0, 1)) + 1) / brightnessChop;
+	faceLuminence[5] = (glm::dot(directionalLight, glm::vec3(0, 0, -1)) + 1) / brightnessChop;
+
+	for(int i = 0; i < 6; i++) {
+		printf("%d: %f\n", i, faceLuminence[i]);
+	}
+}
 
 void GameManager::cullFaces(int x, int y, int z) {
 	Block* block = getBlock(x, y, z);

@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/ext.hpp>
 #include <string>
 
 #include "Globals.hpp"

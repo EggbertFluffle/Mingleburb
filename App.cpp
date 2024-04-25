@@ -1,4 +1,6 @@
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <GLFW/glfw3.h>
 
 #include "Globals.hpp"
@@ -14,7 +16,6 @@ App::App() :
 void App::init() {
 	perlinOffsets* po = createPerlinOffsets(NOISE_OCTAVES);
 	float w = static_cast<float>(CHUNK_WIDTH);
-	float b = static_cast<float>(BUILD_HEIGHT);
 
 	for(int z = 0; z < CHUNK_WIDTH - 1; z++) {
 		for(int y = 0; y < BUILD_HEIGHT - 1; y++) {
@@ -32,6 +33,8 @@ void App::init() {
 			}
 		}
 	}
+
+	graphicsManager.shader.useShader();
 }
 
 void App::run() {
@@ -47,10 +50,13 @@ void App::run() {
 
 		player.getLookAt(graphicsManager.view);
 		graphicsManager.shader.setMat4("view", graphicsManager.view);
+		graphicsManager.shader.setMat4("projection", graphicsManager.projection);
 
-		for(int i = 1; i <= 6; i++) {
-			graphicsManager.bindFace(i - 1);
-			unsigned char face = 0b00000100 << (6 - i);
+		for(int i = 0; i < 6; i++) {
+			graphicsManager.bindFace(i);
+			graphicsManager.shader.setFloat("luminence", gameManager.faceLuminence[i]);
+			// printf("rendering face %d: %f\n", i, gameManager.faceLuminence[i]);
+			unsigned char face = 0b00000100 << (6 - (i + 1));
 			for(int z = 0; z < CHUNK_WIDTH; z++) {
 				for(int y = 0; y < BUILD_HEIGHT; y++) {
 					for(int x = 0; x < CHUNK_WIDTH; x++) {
@@ -66,9 +72,7 @@ void App::run() {
 								glm::vec3(0.5f, 0.5f, 0.5f)
 							);
 							graphicsManager.shader.setMat4("model", model);
-							graphicsManager.shader.setMat4("projection", graphicsManager.projection);
 							graphicsManager.shader.setInt("highlighted", curr->highlighted);
-							graphicsManager.shader.useShader();
 							graphicsManager.bindTexture(curr->texture);
 
 							glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

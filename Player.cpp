@@ -37,7 +37,6 @@ void Player::update(GLFWwindow* window, GameManager* gameManager) {
 		}
 	}
 
-
 	velocity = glm::vec3(
 		(inputManager.getKeyState(GLFW_KEY_D) ? 1.0f : 0.0f) + (inputManager.getKeyState(GLFW_KEY_A) ? -1.0f : 0.0f),
 		(inputManager.getKeyState(GLFW_KEY_SPACE) ? 1.0f : 0.0f) + (inputManager.getKeyState(GLFW_KEY_LEFT_SHIFT) ? -1.0f : 0.0f),
@@ -96,9 +95,9 @@ void Player::castBlockRay(GameManager* gameManager) {
 			position.z + (lookDir.z * viewDistance) * a
 		);
 		block = gameManager->getBlock(
-			std::floor(reach.x + 0.5),
-			std::floor(reach.y + 0.5),
-			std::floor(reach.z + 0.5)
+			int(reach.x + 0.5),
+			int(reach.y + 0.5),
+			int(reach.z + 0.5)
 		);
 		if(block != nullptr && !block->air) {
 			selectedBlock = block; 

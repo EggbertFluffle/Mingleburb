@@ -59,9 +59,9 @@ GraphicsManager::~GraphicsManager() {
 	glfwTerminate();
 }
 
-void GraphicsManager::loadTexture(std::string name, std::string path) {
+void GraphicsManager::loadTexture(const char* name, const char* path) {
 	int texWidth, texHeight, nrChannels;
-	unsigned char* textureData = stbi_load(path.c_str(), &texWidth, &texHeight, &nrChannels, 0);
+	unsigned char* textureData = stbi_load(path, &texWidth, &texHeight, &nrChannels, 0);
 
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -79,7 +79,7 @@ void GraphicsManager::loadTexture(std::string name, std::string path) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
-	textures[name] = texture;
+	BLOCK_TEXTURE_ID_TABLE.insert(std::make_pair(std::string(name), texture));
 
 	stbi_image_free(textureData);
 }
@@ -105,8 +105,36 @@ void GraphicsManager::initializeGLFW() {
 	glfwSetKeyCallback(window, (GLFWkeyfun)Global::propogateKeyCallback);
 }
 
-void GraphicsManager::bindTexture(std::string name) {
-	glBindTexture(GL_TEXTURE_2D, textures[name]);
+void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it) {
+	bindFace(i);
+	unsigned char face = 0b00000100 << (6 - (i + 1));
+	for(int z = 0; z < CHUNK_WIDTH; z++) {
+		for(int y = 0; y < BUILD_HEIGHT; y++) {
+			for(int x = 0; x < CHUNK_WIDTH; x++) {
+				Block* curr = it->getBlock(x, y, z);
+				if(curr != nullptr && (curr->faces & face) == face) {
+					glm::mat4 model(1.0f);
+					model = glm::scale(
+						glm::translate(glm::mat4(1.0f), glm::vec3(
+							static_cast<float>(x) + (it->chunkCoordinates.x * CHUNK_WIDTH),
+							static_cast<float>(y),
+							static_cast<float>(z) + (it->chunkCoordinates.y * CHUNK_WIDTH)
+						)),
+						glm::vec3(0.5f, 0.5f, 0.5f)
+					);
+					shader.setMat4("model", model);
+					shader.setInt("highlighted", curr->highlighted);
+					bindTexture(&(curr->id));
+
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+				}
+			}
+		}
+	}
+}
+
+void GraphicsManager::bindTexture(int* id) {
+	glBindTexture(GL_TEXTURE_2D, *id);
 } 
 
 void GraphicsManager::bindFace(int face) {

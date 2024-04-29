@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
@@ -113,8 +114,7 @@ void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it)
 		for(int y = 0; y < BUILD_HEIGHT; y++) {
 			for(int x = 0; x < CHUNK_WIDTH; x++) {
 				Block* curr = it->getBlock(x, y, z);
-				if(curr == nullptr || curr->id == 0) continue;
-				if((curr->faces & face) == face) {
+				if(curr != nullptr && curr->id != 0 && (curr->faces & face) == face) {
 					glm::mat4 model(1.0f);
 					model = glm::scale(
 						glm::translate(glm::mat4(1.0f), glm::vec3(

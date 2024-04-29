@@ -11,8 +11,8 @@ const int WIDTH = 1920;
 const int HEIGHT = 1080;
 #endif
 
-const int CHUNK_WIDTH = 2;
-const int BUILD_HEIGHT = 2;
+const int CHUNK_WIDTH = 4;
+const int BUILD_HEIGHT = 4;
 
 #ifndef ENABLE_MOUSE_CONTROLS
 const bool MOUSE_CONTROLS = false;

@@ -94,11 +94,12 @@ void Player::castBlockRay(GameManager* gameManager) {
 			position.y + (lookDir.y * viewDistance) * a,
 			position.z + (lookDir.z * viewDistance) * a
 		);
-		block = gameManager->getBlock(
-			int(reach.x + 0.5),
-			int(reach.y + 0.5),
-			int(reach.z + 0.5)
-		);
+		// block = gameManager->getBlock(
+		// 	int(reach.x + 0.5),
+		// 	int(reach.y + 0.5),
+		// 	int(reach.z + 0.5)
+		// );
+		block = nullptr;
 		if(block != nullptr) {
 			selectedBlock = block; 
 			selectedBlockCoords = glm::vec3(

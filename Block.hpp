@@ -1,7 +1,6 @@
 #pragma once
 
-#include <unordered_map>
-#include <string> 
+#include <vector>
 
 const float RECT_VERTICES[6][20] = {
 	// right 1000 0000
@@ -94,15 +93,13 @@ const int RECT_INDICES[] = {
 	1, 2, 3
 };
 
-const std::unordered_map<std::string, unsigned int> BLOCK_TEXTURE_ID_TABLE;
+#include <stdio.h>
 
 struct Block {
 	int id;
 	unsigned char faces;
 	bool highlighted;
 
-	Block() : id(BLOCK_TEXTURE_ID_TABLE.at("dirt")) {}
-	Block(const char* textureName) {
-		BLOCK_TEXTURE_ID_TABLE.at(textureName);
-	};
+	Block() : id(0), faces(0) {}
+	Block(int i) : id(i) {}
 };

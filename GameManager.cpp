@@ -11,11 +11,12 @@
 GameManager::GameManager() : 
 	po(Perlin::createPerlinOffsets(NOISE_OCTAVES))
 {
-	for(int z = 0; z < 3; z++) {
-		for(int x = 0; x < 3; x++) {
-			chunks.push_front(Chunk(x, z));
-		}
-	}
+	// for(int z = 0; z < 3; z++) {
+	// 	for(int x = 0; x < 3; x++) {
+	// 		chunks.push_front(Chunk(x, z));
+	// 	}
+	// }
+	chunks.push_front(Chunk(0, 0));
 
 	for(auto it = chunks.begin(); it != chunks.end(); it++) {
 		it->generateNoise(po);	
@@ -38,39 +39,46 @@ GameManager::GameManager() :
 
 void GameManager::cullFaces(int x, int y, int z) {
 	Block* block = getBlock(x, y, z);
-	if(block == nullptr) return;
+	if(block == nullptr || block->id == 0) return;
+	block->faces = 0;
 	
 	// Right = 0b10000000
 	Block* right = getBlock(x + 1, y, z);
-	if (right != nullptr) {
+	if (right == nullptr || right->id == 0) {
 		block->faces = block->faces | 0b10000000;
 	}
 
 	// Left = 0b01000000
-	if(getBlock(x - 1, y, z) == nullptr) {
+	Block* left = getBlock(x - 1, y, z);
+	if(left == nullptr || left->id == 0) {
 		block->faces = block->faces | 0b01000000;
 	}
 
 	// Top = 0b00100000
-	if (getBlock(x, y + 1, z) == nullptr) {
+	Block* top = getBlock(x, y + 1, z);
+	if (top == nullptr || top->id == 0) {
 		block->faces = block->faces | 0b00100000;
 	}
 
 	// Bottom = 0b00010000
-	if (getBlock(x, y - 1, z) == nullptr) {
+	Block* bottom = getBlock(x, y - 1, z);
+	if (bottom == nullptr || bottom->id == 0) {
 		block->faces = block->faces | 0b00010000;
 	}
 
 	// Back = 0b00001000
-	if (getBlock(x, y, z + 1) == nullptr) {
+	Block* back = getBlock(x, y, z + 1);
+	if (back == nullptr || back->id == 0) {
 		block->faces = block->faces | 0b00001000;
 	}
 
 	// Front = 0b00000100
-	if (getBlock(x, y, z - 1) == nullptr) {
+	Block* front = getBlock(x, y, z - 1);
+	if (front == nullptr || front->id == 0) {
 		block->faces = block->faces | 0b00000100;
 	}
 
+	printf("id: %d pos: (%d, %d, %d): %.8b\n",	block->id, x, y, z, block->faces);
 	block->faces = ~block->faces;
 }
 

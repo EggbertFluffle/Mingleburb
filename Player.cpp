@@ -99,7 +99,7 @@ void Player::castBlockRay(GameManager* gameManager) {
 			int(reach.y + 0.5),
 			int(reach.z + 0.5)
 		);
-		if(block != nullptr && !block->air) {
+		if(block != nullptr) {
 			selectedBlock = block; 
 			selectedBlockCoords = glm::vec3(
 				std::floor(reach.x + 0.5),

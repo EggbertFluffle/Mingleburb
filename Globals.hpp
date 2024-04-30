@@ -1,7 +1,7 @@
 #pragma once
 
 #define FULLSCREEN
-#define ENABLE_MOUSE_CONTROLS
+// #define ENABLE_MOUSE_CONTROLS
 
 #ifndef FULLSCREEN
 const int WIDTH = 800;
@@ -11,8 +11,8 @@ const int WIDTH = 1920;
 const int HEIGHT = 1080;
 #endif
 
-const int CHUNK_WIDTH = 16;
-const int BUILD_HEIGHT = 16;
+const int CHUNK_WIDTH = 2;
+const int BUILD_HEIGHT = 2;
 
 #ifndef ENABLE_MOUSE_CONTROLS
 const bool MOUSE_CONTROLS = false;

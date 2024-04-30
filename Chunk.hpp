@@ -16,7 +16,7 @@ public:
 
 	Chunk(int x, int z);
 	Block* getBlock(int x, int y, int z);
-	void setBlock(int x, int y, int z, const char* blockName);
+	void setBlock(int x, int y, int z, int blockId);
 	void setAir(int x, int y, int z);
 	void generateNoise(Perlin::perlinOffsets* po);
 };

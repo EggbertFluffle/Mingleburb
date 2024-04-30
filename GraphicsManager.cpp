@@ -1,10 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
-#include <string>
 
-#include "Globals.hpp"
 #include "GraphicsManager.hpp"
+#include "Globals.hpp"
 #include "Block.hpp"
 #include "stb_image.hpp"
 
@@ -42,6 +41,8 @@ GraphicsManager::GraphicsManager() {
 		glEnableVertexAttribArray(1);
 	}
 
+	BLOCK_ID_TO_TEXTURE_ID.push_back(0);
+
 	loadTexture("dirt", "./assets/dirt.png");
 	loadTexture("pink_wool", "./assets/pink_wool.png");
 	loadTexture("oak_planks", "./assets/oak_planks.png");
@@ -74,12 +75,12 @@ void GraphicsManager::loadTexture(const char* name, const char* path) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	// Texture filtering modes are set per operation (minifying, magnifying)
+	// Texture filtering modes are set per operation (minifying, magnifying);
 	// Additionally defines which mipmap to use, mipmaps only matter when DOWNSCALING
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
-	BLOCK_TEXTURE_ID_TABLE.insert(std::make_pair(std::string(name), texture));
+	BLOCK_ID_TO_TEXTURE_ID.push_back(texture);
 
 	stbi_image_free(textureData);
 }
@@ -112,7 +113,8 @@ void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it)
 		for(int y = 0; y < BUILD_HEIGHT; y++) {
 			for(int x = 0; x < CHUNK_WIDTH; x++) {
 				Block* curr = it->getBlock(x, y, z);
-				if(curr != nullptr && (curr->faces & face) == face) {
+				if(curr == nullptr || curr->id == 0) continue;
+				if((curr->faces & face) == face) {
 					glm::mat4 model(1.0f);
 					model = glm::scale(
 						glm::translate(glm::mat4(1.0f), glm::vec3(
@@ -124,7 +126,7 @@ void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it)
 					);
 					shader.setMat4("model", model);
 					shader.setInt("highlighted", curr->highlighted);
-					bindTexture(&(curr->id));
+					bindTexture(BLOCK_ID_TO_TEXTURE_ID.at(curr->id + 1));
 
 					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 				}
@@ -133,8 +135,8 @@ void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it)
 	}
 }
 
-void GraphicsManager::bindTexture(int* id) {
-	glBindTexture(GL_TEXTURE_2D, *id);
+void GraphicsManager::bindTexture(int id) {
+	glBindTexture(GL_TEXTURE_2D, id);
 } 
 
 void GraphicsManager::bindFace(int face) {

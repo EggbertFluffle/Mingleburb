@@ -13,7 +13,7 @@ class GameManager {
 public:
 	std::forward_list<Chunk> chunks;
 	float faceLuminence[6];
-
+	
 	GameManager();
 	void cullFaces(int x, int y, int z);
 	void cullSurroundingBlocks(glm::vec3& selectedBlockCoords);

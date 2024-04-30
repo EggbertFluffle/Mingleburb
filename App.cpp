@@ -7,26 +7,19 @@
 #include "App.hpp"
 
 App::App() :
-	player(CHUNK_WIDTH / 2.0f, BUILD_HEIGHT / 2.0f, CHUNK_WIDTH / 2.0f, PI / 2.0f, 0.0f),
+	player(CHUNK_WIDTH * 3 / 2, 10, CHUNK_WIDTH * 3 / 2, PI / 2.0f, 0.0f),
 	gameManager(),
 	graphicsManager()
 {}
 
 void App::init() {
 	graphicsManager.shader.useShader();
-
-	Block* b = gameManager.getBlock(-2, 0, 0);
-	if(b == nullptr) {
-		printf("block is nullptr\n");
-	// } else if(b->id == 0) {
-	// 	printf("block is air\n");
-	} else {
-		printf("block id is %d\n", b->id);
-	}
 }
 
 void App::run() {
 	while(!glfwWindowShouldClose(graphicsManager.window)) {
+		glfwPollEvents();
+
 		if(player.inputManager.getKeyState(GLFW_KEY_Q)) {
 			glfwSetWindowShouldClose(graphicsManager.window, true);
 		}
@@ -40,14 +33,10 @@ void App::run() {
 		graphicsManager.shader.setMat4("view", graphicsManager.view);
 		graphicsManager.shader.setMat4("projection", graphicsManager.projection);
 
-		for(int i = 0; i < 6; i++) {
-			for(auto it = gameManager.chunks.begin(); it != gameManager.chunks.end(); it++) {
-				graphicsManager.shader.setFloat("luminence", gameManager.faceLuminence[i]);
-				graphicsManager.renderChunk(i, it);
-			}
-		}
+		graphicsManager.renderAllChunks(&gameManager);
 
 		glfwSwapBuffers(graphicsManager.window);
-		glfwPollEvents();
+
+		// if(graphicsManager.highlightedBlock == nullptr) graphicsManager.highlightedBlock->highlighted = false;
 	}
 }

@@ -12,6 +12,8 @@ class Player {
 	float sensitivity;
 	float speed;
 	float viewDistance;
+	double deltaTime;
+	double previousTime;
 
 	void castBlockRay(GameManager* gameManager);
 

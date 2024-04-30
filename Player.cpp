@@ -17,7 +17,7 @@ Player::Player() :
 
 Player::Player(float x, float y, float z, float h, float p) :
 	sensitivity(0.05f),
-	speed(0.1f),
+	speed(7.0f),
 	viewDistance(5.0f),
 	position(x, y, z),
 	yaw(h),
@@ -26,6 +26,8 @@ Player::Player(float x, float y, float z, float h, float p) :
 {}
 
 void Player::update(GLFWwindow* window, GameManager* gameManager) {
+	deltaTime = glfwGetTime() - previousTime;
+
 	inputManager.captureCursor(window);
 
 	castBlockRay(gameManager);
@@ -55,6 +57,8 @@ void Player::update(GLFWwindow* window, GameManager* gameManager) {
 
 	if(pitch > PI / 2) pitch = PI / 2;
 	if(pitch < -PI / 2) pitch = PI / -2;
+
+	previousTime = glfwGetTime();
 }
 
 void Player::moveWorld(float x, float y, float z) {
@@ -63,9 +67,9 @@ void Player::moveWorld(float x, float y, float z) {
 
 void Player::moveLocal(float x, float y, float z) {
 	moveWorld(
-		(std::cos(yaw) * z + std::cos(yaw + PI / 2) * x) * speed,
-		y * speed,
-		(std::sin(yaw) * z + std::sin(yaw + PI / 2) * x) * speed
+		(std::cos(yaw) * z + std::cos(yaw + PI / 2) * x) * speed * deltaTime,
+		y * speed * deltaTime,
+		(std::sin(yaw) * z + std::sin(yaw + PI / 2) * x) * speed * deltaTime
 	);
 }
 

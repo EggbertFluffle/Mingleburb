@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "Chunk.hpp"
 #include "Globals.hpp"
 #include "Block.hpp"
@@ -16,6 +18,10 @@ void Chunk::generateNoise(Perlin::perlinOffsets* po){
 					setBlock(x, y, z, 2);
 				} else {
 					setAir(x, y, z);
+				}
+				Block* b = getBlock(x, y, z);
+				if(b != nullptr && b->highlighted) {
+					printf("block is highlgihted\n");
 				}
 			}
 		}

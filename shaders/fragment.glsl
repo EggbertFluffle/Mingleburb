@@ -12,7 +12,7 @@ uniform float luminence;
 void main() {
 	FragColor = texture(loadedTexture, fTex);
 	FragColor = mix(FragColor, vec4(0.0f, 0.0f, 0.0f, 1.0f), luminence);
-	// if(highlighted) {
-	// 	FragColor = mix(FragColor, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f);
-	// }
+	if(highlighted) {
+		FragColor = mix(FragColor, vec4(1.0f, 1.0f, 1.0f, 1.0f), 0.5f);
+	}
 }

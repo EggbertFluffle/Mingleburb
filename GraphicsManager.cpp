@@ -53,6 +53,7 @@ GraphicsManager::GraphicsManager() {
 	projection = glm::perspective(glm::radians(75.0f), (float)WIDTH/(float)HEIGHT, 0.1f, 100.0f);
 
 	shader.setMat4("projection", projection);
+	shader.setInt("highlighted", false);
 
 	shader.useShader();
 }
@@ -107,6 +108,15 @@ void GraphicsManager::initializeGLFW() {
 	glfwSetKeyCallback(window, (GLFWkeyfun)Global::propogateKeyCallback);
 }
 
+void GraphicsManager::renderAllChunks(GameManager* gameManager) {
+	for(int i = 0; i < 6; i++) {
+		for(auto it = gameManager->chunks.begin(); it != gameManager->chunks.end(); it++) {
+			shader.setFloat("luminence", gameManager->faceLuminence[i]);
+			renderChunk(i, it);
+		}
+	}
+}
+
 void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it) {
 	bindFace(i);
 	unsigned char face = 0b00000100 << (6 - (i + 1));
@@ -118,14 +128,20 @@ void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it)
 					glm::mat4 model(1.0f);
 					model = glm::scale(
 						glm::translate(glm::mat4(1.0f), glm::vec3(
-							static_cast<float>(x) + (it->chunkCoordinates.x * CHUNK_WIDTH),
-							static_cast<float>(y),
-							static_cast<float>(z) + (it->chunkCoordinates.y * CHUNK_WIDTH)
+							float(x) + (it->chunkCoordinates.x * CHUNK_WIDTH),
+							float(y),
+							float(z) + (it->chunkCoordinates.y * CHUNK_WIDTH)
 						)),
 						glm::vec3(0.5f, 0.5f, 0.5f)
 					);
 					shader.setMat4("model", model);
-					shader.setInt("highlighted", curr->highlighted);
+					if(curr->highlighted) {
+						shader.setInt("highlighted", true);
+						highlightedBlock = curr;
+					} else {
+						shader.setInt("highlighted", false);
+					}
+
 					bindTexture(BLOCK_ID_TO_TEXTURE_ID.at(curr->id + 1));
 
 					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

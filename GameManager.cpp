@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
@@ -17,7 +16,6 @@ GameManager::GameManager() :
 			chunks.push_front(Chunk(x, z));
 		}
 	}
-	// chunks.push_front(Chunk(0, 0));
 
 	for(auto it = chunks.begin(); it != chunks.end(); it++) {
 		it->generateNoise(po);	
@@ -40,46 +38,28 @@ GameManager::GameManager() :
 
 void GameManager::cullFaces(int x, int y, int z) {
 	Block* block = getBlock(x, y, z);
-	if(block == nullptr || block->id == 0) return;
-	block->faces = 0;
-	
-	// Right = 0b10000000
-	Block* right = getBlock(x + 1, y, z);
-	if (right != nullptr && right->id != 0) {
-		block->faces = block->faces | 0b10000000;
+	unsigned char faces = 0;
+	if(!(block == nullptr || block->id == 0)){
+		Block* dirs[6] = {
+			getBlock(x + 1, y, z),
+			getBlock(x - 1, y, z),
+			getBlock(x, y + 1, z),
+			getBlock(x, y - 1, z),
+			getBlock(x, y, z + 1),
+			getBlock(x, y, z - 1),
+		};
+
+		for(int i = 0; i < 6; i++) {
+			unsigned char f = 0b10000000 >> (i);
+			Block* b = dirs[i];
+			if (b == nullptr || (b != nullptr && b->id != 0)) {
+				faces = faces | f;
+			}
+		}
+		faces = ~faces;
 	}
 
-	// Left = 0b01000000
-	Block* left = getBlock(x - 1, y, z);
-	if(left != nullptr && left->id != 0) {
-		block->faces = block->faces | 0b01000000;
-	}
-
-	// Top = 0b00100000
-	Block* top = getBlock(x, y + 1, z);
-	if (top != nullptr && top->id != 0) {
-		block->faces = block->faces | 0b00100000;
-	}
-
-	// Bottom = 0b00010000
-	Block* bottom = getBlock(x, y - 1, z);
-	if (bottom != nullptr && bottom->id != 0) {
-		block->faces = block->faces | 0b00010000;
-	}
-
-	// Back = 0b00001000
-	Block* back = getBlock(x, y, z + 1);
-	if (back != nullptr && back->id != 0) {
-		block->faces = block->faces | 0b00001000;
-	}
-
-	// Front = 0b00000100
-	Block* front = getBlock(x, y, z - 1);
-	if (front != nullptr && front->id != 0) {
-		block->faces = block->faces | 0b00000100;
-	}
-
-	block->faces = ~block->faces;
+	block->faces = faces;
 }
 
 void GameManager::cullChunkFaces(Chunk* chunk) {

@@ -13,6 +13,7 @@ class GameManager {
 public:
 	std::forward_list<Chunk> chunks;
 	float faceLuminence[6];
+	unsigned int worldWidth;
 	
 	GameManager();
 	void cullFaces(int x, int y, int z);

@@ -7,12 +7,14 @@
 #include <forward_list>
 
 #include "GameManager.hpp"
+#include "Player.hpp"
 #include "Chunk.hpp"
 #include "stb_image.hpp"
 #include "Shader.hpp"
 
 class GraphicsManager {
 	unsigned int blockFaceVAOs[6];
+	int renderDistance;
 
 	void loadTexture(const char* name, const char* path);
 	void loadBlockVertices();
@@ -21,7 +23,6 @@ public:
 	GLFWwindow* window;
 	Shader shader;
 	glm::mat4 view, projection;
-	Block* highlightedBlock;
 	std::vector<unsigned int> BLOCK_ID_TO_TEXTURE_ID;
 
 	GraphicsManager();
@@ -30,7 +31,7 @@ public:
 
 	void bindTexture(int id);
 	void bindFace(int face);
-	void renderAllChunks(GameManager* gameManager);
+	void renderAllChunks(GameManager* gameManager, Player* player);
 	void renderChunk(int& i, std::forward_list<Chunk>::iterator it);
 
 	static void windowResizeCallback(GLFWwindow* window, int width, int height) {

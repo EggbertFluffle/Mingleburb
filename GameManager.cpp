@@ -9,10 +9,11 @@
 #include "perlin.hpp"
 
 GameManager::GameManager() : 
-	po(Perlin::createPerlinOffsets(NOISE_OCTAVES))
+	po(Perlin::createPerlinOffsets(NOISE_OCTAVES)),
+	worldWidth(3)
 {
-	for(int z = 0; z < 3; z++) {
-		for(int x = 0; x < 3; x++) {
+	for(unsigned int z = 0; z < worldWidth; z++) {
+		for(unsigned int x = 0; x < worldWidth; x++) {
 			chunks.push_front(Chunk(x, z));
 		}
 	}
@@ -39,25 +40,24 @@ GameManager::GameManager() :
 void GameManager::cullFaces(int x, int y, int z) {
 	Block* block = getBlock(x, y, z);
 	unsigned char faces = 0;
-	if(!(block == nullptr || block->id == 0)){
-		Block* dirs[6] = {
-			getBlock(x + 1, y, z),
-			getBlock(x - 1, y, z),
-			getBlock(x, y + 1, z),
-			getBlock(x, y - 1, z),
-			getBlock(x, y, z + 1),
-			getBlock(x, y, z - 1),
-		};
+	if(block == nullptr || block->id == 0) return;
+	Block* dirs[6] = {
+		getBlock(x + 1, y, z),
+		getBlock(x - 1, y, z),
+		getBlock(x, y + 1, z),
+		getBlock(x, y - 1, z),
+		getBlock(x, y, z + 1),
+		getBlock(x, y, z - 1),
+	};
 
-		for(int i = 0; i < 6; i++) {
-			unsigned char f = 0b10000000 >> (i);
-			Block* b = dirs[i];
-			if (b == nullptr || (b != nullptr && b->id != 0)) {
-				faces = faces | f;
-			}
+	for(int i = 0; i < 6; i++) {
+		unsigned char f = 0b10000000 >> (i);
+		Block* b = dirs[i];
+		if (b == nullptr || (b != nullptr && b->id != 0)) {
+			faces = faces | f;
 		}
-		faces = ~faces;
 	}
+	faces = ~faces;
 
 	block->faces = faces;
 }
@@ -66,7 +66,7 @@ void GameManager::cullChunkFaces(Chunk* chunk) {
 	for(int z = 0; z < CHUNK_WIDTH; z++) {
 		for(int y = 0; y < BUILD_HEIGHT; y++) {
 			for(int x = 0; x < CHUNK_WIDTH; x++) {
-				cullFaces(chunk->chunkCoordinates.x * CHUNK_WIDTH + x, y, chunk->chunkCoordinates.y * CHUNK_WIDTH + z);
+				cullFaces(chunk->coords.x * CHUNK_WIDTH + x, y, chunk->coords.y * CHUNK_WIDTH + z);
 			}
 		}
 	}
@@ -80,7 +80,7 @@ Block* GameManager::getBlock(int x, int y, int z) {
 
 Chunk* GameManager::getChunk(int x, int z) {
 	for(std::forward_list<Chunk>::iterator it = chunks.begin(); it != chunks.end(); it++) {
-		if(it->chunkCoordinates.x == x && it->chunkCoordinates.y == z) {
+		if(it->coords.x == x && it->coords.y == z) {
 			return &(*it);
 		}
 	}

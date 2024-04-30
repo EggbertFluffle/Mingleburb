@@ -6,8 +6,8 @@
 
 class App {
 public:
-	Player player;
 	GameManager gameManager;
+	Player player;
 	GraphicsManager graphicsManager;
 
 	App();

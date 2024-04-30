@@ -1,7 +1,7 @@
 #pragma once
 
 #define FULLSCREEN
-// #define ENABLE_MOUSE_CONTROLS
+#define ENABLE_MOUSE_CONTROLS
 
 #ifndef FULLSCREEN
 const int WIDTH = 800;

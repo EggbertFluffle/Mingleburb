@@ -5,10 +5,11 @@
 
 #include "GraphicsManager.hpp"
 #include "Globals.hpp"
+#include "Player.hpp"
 #include "Block.hpp"
 #include "stb_image.hpp"
 
-GraphicsManager::GraphicsManager() {
+GraphicsManager::GraphicsManager() : renderDistance(4) {
 	initializeGLFW();
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -108,11 +109,23 @@ void GraphicsManager::initializeGLFW() {
 	glfwSetKeyCallback(window, (GLFWkeyfun)Global::propogateKeyCallback);
 }
 
-void GraphicsManager::renderAllChunks(GameManager* gameManager) {
+void GraphicsManager::renderAllChunks(GameManager* gameManager, Player* player) {
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	shader.setMat4("view", view);
+	shader.setMat4("projection", projection);
+
+	for(auto it = gameManager->chunks.begin(); it != gameManager->chunks.end(); it++) {
+		it->loaded = std::pow(it->coords.x - (player->position.x - CHUNK_WIDTH / 2) / CHUNK_WIDTH, 2) + 
+					 std::pow(it->coords.y - (player->position.z - CHUNK_WIDTH / 2) / CHUNK_WIDTH, 2) <
+					 std::pow(renderDistance, 2);
+	}
+
 	for(int i = 0; i < 6; i++) {
+		shader.setFloat("luminence", gameManager->faceLuminence[i]);
 		for(auto it = gameManager->chunks.begin(); it != gameManager->chunks.end(); it++) {
-			shader.setFloat("luminence", gameManager->faceLuminence[i]);
-			renderChunk(i, it);
+			if(it->loaded) renderChunk(i, it);
 		}
 	}
 }
@@ -128,24 +141,21 @@ void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it)
 					glm::mat4 model(1.0f);
 					model = glm::scale(
 						glm::translate(glm::mat4(1.0f), glm::vec3(
-							float(x) + (it->chunkCoordinates.x * CHUNK_WIDTH),
+							float(x) + (it->coords.x * CHUNK_WIDTH),
 							float(y),
-							float(z) + (it->chunkCoordinates.y * CHUNK_WIDTH)
+							float(z) + (it->coords.y * CHUNK_WIDTH)
 						)),
 						glm::vec3(0.5f, 0.5f, 0.5f)
 					);
 					shader.setMat4("model", model);
-					if(curr->highlighted) {
-						shader.setInt("highlighted", true);
-						highlightedBlock = curr;
-					} else {
-						shader.setInt("highlighted", false);
-					}
+					shader.setInt("highlighted", curr->highlighted);
 
 					bindTexture(BLOCK_ID_TO_TEXTURE_ID.at(curr->id + 1));
 
 					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
 				}
+				if(i == 5) curr->highlighted = false;
 			}
 		}
 	}

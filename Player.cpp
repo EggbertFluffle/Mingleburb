@@ -17,7 +17,7 @@ Player::Player() :
 
 Player::Player(float x, float y, float z, float h, float p) :
 	sensitivity(0.05f),
-	speed(7.0f),
+	speed(15.0f),
 	viewDistance(5.0f),
 	position(x, y, z),
 	yaw(h),
@@ -103,7 +103,7 @@ void Player::castBlockRay(GameManager* gameManager) {
 			int(reach.y + 0.5),
 			int(reach.z + 0.5)
 		);
-		if(block != nullptr) {
+		if(block != nullptr && block->id != 0) {
 			selectedBlock = block; 
 			selectedBlockCoords = glm::vec3(
 				std::floor(reach.x + 0.5),

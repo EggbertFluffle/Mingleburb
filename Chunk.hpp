@@ -12,7 +12,8 @@ class Chunk {
 	std::array<Block, BUILD_HEIGHT * CHUNK_WIDTH * CHUNK_WIDTH> blocks;
 
 public:
-	glm::ivec2 chunkCoordinates;
+	glm::ivec2 coords;
+	bool loaded;
 
 	Chunk(int x, int z);
 	Block* getBlock(int x, int y, int z);

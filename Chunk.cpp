@@ -11,13 +11,12 @@ void Chunk::generateNoise(Perlin::perlinOffsets* po){
 	for(int z = 0; z < CHUNK_WIDTH; z++) {
 		for(int y = 0; y < BUILD_HEIGHT; y++) {
 			for(int x = 0; x < CHUNK_WIDTH; x++) {
-				// int height = BUILD_HEIGHT * ((getPerlinNoise(po, ((x + chunkCoordinates.x * CHUNK_WIDTH) / float(CHUNK_WIDTH)) * NOISE_FREQUENCY, ((z + chunkCoordinates.y * CHUNK_WIDTH) / float(CHUNK_WIDTH)) * NOISE_FREQUENCY) / 2) + 0.5f);
-				// if (y < height) {
-				// 	setBlock(x, y, z, 1);
-				// } else {
-				// 	setAir(x, y, z);
-				// }
-				setBlock(x, y, z, 1);
+				int height = BUILD_HEIGHT * ((getPerlinNoise(po, ((x + chunkCoordinates.x * CHUNK_WIDTH) / float(CHUNK_WIDTH)) * NOISE_FREQUENCY, ((z + chunkCoordinates.y * CHUNK_WIDTH) / float(CHUNK_WIDTH)) * NOISE_FREQUENCY) / 2) + 0.5f);
+				if (y < height) {
+					setBlock(x, y, z, 2);
+				} else {
+					setAir(x, y, z);
+				}
 			}
 		}
 	}

@@ -14,6 +14,15 @@ App::App() :
 
 void App::init() {
 	graphicsManager.shader.useShader();
+
+	Block* b = gameManager.getBlock(-2, 0, 0);
+	if(b == nullptr) {
+		printf("block is nullptr\n");
+	// } else if(b->id == 0) {
+	// 	printf("block is air\n");
+	} else {
+		printf("block id is %d\n", b->id);
+	}
 }
 
 void App::run() {

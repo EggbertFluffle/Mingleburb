@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
@@ -11,12 +12,12 @@
 GameManager::GameManager() : 
 	po(Perlin::createPerlinOffsets(NOISE_OCTAVES))
 {
-	// for(int z = 0; z < 3; z++) {
-	// 	for(int x = 0; x < 3; x++) {
-	// 		chunks.push_front(Chunk(x, z));
-	// 	}
-	// }
-	chunks.push_front(Chunk(0, 0));
+	for(int z = 0; z < 3; z++) {
+		for(int x = 0; x < 3; x++) {
+			chunks.push_front(Chunk(x, z));
+		}
+	}
+	// chunks.push_front(Chunk(0, 0));
 
 	for(auto it = chunks.begin(); it != chunks.end(); it++) {
 		it->generateNoise(po);	
@@ -39,59 +40,49 @@ GameManager::GameManager() :
 
 void GameManager::cullFaces(int x, int y, int z) {
 	Block* block = getBlock(x, y, z);
-	// if(block == nullptr || block->id == 0) return;
-	if(block == nullptr) {
-		// printf("nullptr at %d, %d, %d\n", x, y, z);
-		return;
-	}
-	if(block->id == 0) {
-		// printf("block 0 at %d, %d, %d\n", x, y, z);
-		return;
-	}
+	if(block == nullptr || block->id == 0) return;
 	block->faces = 0;
 	
 	// Right = 0b10000000
 	Block* right = getBlock(x + 1, y, z);
-	if (!(right == nullptr || right->id == 0)) {
+	if (right != nullptr && right->id != 0) {
 		block->faces = block->faces | 0b10000000;
 	}
 
-	// // Left = 0b01000000
+	// Left = 0b01000000
 	Block* left = getBlock(x - 1, y, z);
 	if(left != nullptr && left->id != 0) {
 		block->faces = block->faces | 0b01000000;
 	}
 
 	// Top = 0b00100000
-	// Block* top = getBlock(x, y + 1, z);
-	// if (top == nullptr || top->id == 0) {
-	// 	block->faces = block->faces | 0b00100000;
-	// }
-	//
-	// // Bottom = 0b00010000
-	// Block* bottom = getBlock(x, y - 1, z);
-	// if (bottom == nullptr || bottom->id == 0) {
-	// 	block->faces = block->faces | 0b00010000;
-	// }
-	//
-	// // Back = 0b00001000
-	// Block* back = getBlock(x, y, z + 1);
-	// if (back == nullptr || back->id == 0) {
-	// 	block->faces = block->faces | 0b00001000;
-	// }
-	//
-	// // Front = 0b00000100
-	// Block* front = getBlock(x, y, z - 1);
-	// if (front == nullptr || front->id == 0) {
-	// 	block->faces = block->faces | 0b00000100;
-	// }
+	Block* top = getBlock(x, y + 1, z);
+	if (top != nullptr && top->id != 0) {
+		block->faces = block->faces | 0b00100000;
+	}
 
-	printf("id: %d pos: (%d, %d, %d): %.8b\n",	block->id, x, y, z, block->faces);
+	// Bottom = 0b00010000
+	Block* bottom = getBlock(x, y - 1, z);
+	if (bottom != nullptr && bottom->id != 0) {
+		block->faces = block->faces | 0b00010000;
+	}
+
+	// Back = 0b00001000
+	Block* back = getBlock(x, y, z + 1);
+	if (back != nullptr && back->id != 0) {
+		block->faces = block->faces | 0b00001000;
+	}
+
+	// Front = 0b00000100
+	Block* front = getBlock(x, y, z - 1);
+	if (front != nullptr && front->id != 0) {
+		block->faces = block->faces | 0b00000100;
+	}
+
 	block->faces = ~block->faces;
 }
 
 void GameManager::cullChunkFaces(Chunk* chunk) {
-	// printf("chunk coords %d, %d\n", chunk->chunkCoordinates.x, chunk->chunkCoordinates.y);
 	for(int z = 0; z < CHUNK_WIDTH; z++) {
 		for(int y = 0; y < BUILD_HEIGHT; y++) {
 			for(int x = 0; x < CHUNK_WIDTH; x++) {
@@ -102,8 +93,9 @@ void GameManager::cullChunkFaces(Chunk* chunk) {
 }
 
 Block* GameManager::getBlock(int x, int y, int z) {
+	if(x < 0 || y < 0 || z < 0) return nullptr;
 	Chunk* c = getChunk(int(x / CHUNK_WIDTH), int(z / CHUNK_WIDTH));
-	return c != nullptr  && y >= 0 && y < BUILD_HEIGHT ? c->getBlock(x % CHUNK_WIDTH, y, z % CHUNK_WIDTH) : nullptr;
+	return c != nullptr && y < BUILD_HEIGHT ? c->getBlock(x % CHUNK_WIDTH, y, z % CHUNK_WIDTH) : nullptr;
 }
 
 Chunk* GameManager::getChunk(int x, int z) {

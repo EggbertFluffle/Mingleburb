@@ -11,6 +11,7 @@ public:
 	GraphicsManager graphicsManager;
 
 	App();
+	~App();
 	void run();
 	void init();
 };

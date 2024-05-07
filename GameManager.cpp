@@ -10,7 +10,7 @@
 
 GameManager::GameManager() : 
 	po(Perlin::createPerlinOffsets(NOISE_OCTAVES)),
-	worldWidth(3)
+	worldWidth(2)
 {
 	for(unsigned int z = 0; z < worldWidth; z++) {
 		for(unsigned int x = 0; x < worldWidth; x++) {

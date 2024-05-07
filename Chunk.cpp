@@ -19,10 +19,9 @@ void Chunk::generateNoise(Perlin::perlinOffsets* po){
 				} else {
 					setAir(x, y, z);
 				}
-				Block* b = getBlock(x, y, z);
-				if(b != nullptr && b->highlighted) {
-					printf("block is highlgihted\n");
-				}
+				// if(y < 10) {
+				// 	setBlock(x, y, z, 1);
+				// }
 			}
 		}
 	}

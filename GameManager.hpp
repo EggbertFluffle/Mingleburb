@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <forward_list>
 
+#include "Debug.hpp"
 #include "Block.hpp"
 #include "Chunk.hpp"
 #include "perlin.hpp"
@@ -14,6 +15,10 @@ public:
 	std::forward_list<Chunk> chunks;
 	float faceLuminence[6];
 	unsigned int worldWidth;
+
+	#ifdef DEBUG_MODE
+	Debug debug;
+	#endif
 	
 	GameManager();
 	void cullFaces(int x, int y, int z);

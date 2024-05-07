@@ -12,7 +12,6 @@ class Player {
 	float sensitivity;
 	float speed;
 	float viewDistance;
-	double deltaTime;
 	double previousTime;
 
 	void castBlockRay(GameManager* gameManager);
@@ -27,6 +26,7 @@ public:
 	bool mouseControls;
 	Block* selectedBlock;
 	glm::vec3 selectedBlockCoords;
+	double deltaTime;
 
 	Player();
 	Player(float x, float y, float z, float h, float p);

@@ -3,13 +3,14 @@
 #include <GLFW/glfw3.h>
 #include <glm/ext.hpp>
 
+#include "Debug.hpp"
 #include "GraphicsManager.hpp"
 #include "Globals.hpp"
 #include "Player.hpp"
 #include "Block.hpp"
 #include "stb_image.hpp"
 
-GraphicsManager::GraphicsManager() : renderDistance(4) {
+GraphicsManager::GraphicsManager() : renderDistance(2) {
 	initializeGLFW();
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -55,8 +56,6 @@ GraphicsManager::GraphicsManager() : renderDistance(4) {
 
 	shader.setMat4("projection", projection);
 	shader.setInt("highlighted", false);
-
-	shader.useShader();
 }
 
 GraphicsManager::~GraphicsManager() {
@@ -116,6 +115,12 @@ void GraphicsManager::renderAllChunks(GameManager* gameManager, Player* player) 
 	shader.setMat4("view", view);
 	shader.setMat4("projection", projection);
 
+	#ifdef DEBUG_MODE
+	shader.setInt("debug", true);
+	#endif
+
+	shader.useShader();
+
 	for(auto it = gameManager->chunks.begin(); it != gameManager->chunks.end(); it++) {
 		it->loaded = std::pow(it->coords.x - (player->position.x - CHUNK_WIDTH / 2) / CHUNK_WIDTH, 2) + 
 					 std::pow(it->coords.y - (player->position.z - CHUNK_WIDTH / 2) / CHUNK_WIDTH, 2) <
@@ -160,6 +165,27 @@ void GraphicsManager::renderChunk(int& i, std::forward_list<Chunk>::iterator it)
 		}
 	}
 }
+
+#ifdef DEBUG_MODE
+void GraphicsManager::renderDebug(Debug* debug) {
+	shader.setInt("debug", true);
+	for(int i = 0; i < 6; i++) {
+		bindFace(i);
+		for(std::vector<DebugPoint>::iterator it = debug->points.begin(); it != debug->points.end(); it++) {
+			glm::mat4 model(1.0f);
+			model = glm::scale(
+				glm::translate(glm::mat4(1.0f), glm::vec3(it->pos.x, it->pos.y, it->pos.z)),
+				glm::vec3(0.01f, 0.01f, 0.01f)
+			);
+			shader.setMat4("model", model);
+
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		}
+	}
+
+	debug->clearQueue();
+}
+#endif
 
 void GraphicsManager::bindTexture(int id) {
 	glBindTexture(GL_TEXTURE_2D, id);

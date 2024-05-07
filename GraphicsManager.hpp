@@ -34,6 +34,10 @@ public:
 	void renderAllChunks(GameManager* gameManager, Player* player);
 	void renderChunk(int& i, std::forward_list<Chunk>::iterator it);
 
+	#ifdef DEBUG_MODE
+	void renderDebug(Debug* debug);
+	#endif
+
 	static void windowResizeCallback(GLFWwindow* window, int width, int height) {
 		glViewport(0, 0, width, height);
 	}

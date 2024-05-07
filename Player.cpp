@@ -4,7 +4,9 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
+#include <sys/select.h>
 
+#include "imgui.h"
 #include "Player.hpp"
 #include "InputManager.hpp"
 #include "Block.hpp"
@@ -54,9 +56,10 @@ void Player::update(GLFWwindow* window, GameManager* gameManager) {
 		yaw += (inputManager.getKeyState(GLFW_KEY_RIGHT) ? 0.05f : 0.0f) + (inputManager.getKeyState(GLFW_KEY_LEFT) ? -0.05f : 0.0f);
 		pitch += (inputManager.getKeyState(GLFW_KEY_UP) ? 0.05f : 0.0f) + (inputManager.getKeyState(GLFW_KEY_DOWN) ? -0.05f : 0.0f);
 	}
+	yaw = yaw > TWO_PI ? TWO_PI - yaw : (yaw < 0.0f ? TWO_PI + yaw : yaw);
 
-	if(pitch > PI / 2) pitch = PI / 2;
-	if(pitch < -PI / 2) pitch = PI / -2;
+	if(pitch > HALF_PI - 0.1f) pitch = HALF_PI - 0.1f;
+	if(pitch < -HALF_PI + 0.1f) pitch = -HALF_PI + 0.1f;
 
 	previousTime = glfwGetTime();
 }
@@ -67,9 +70,9 @@ void Player::moveWorld(float x, float y, float z) {
 
 void Player::moveLocal(float x, float y, float z) {
 	moveWorld(
-		(std::cos(yaw) * z + std::cos(yaw + PI / 2) * x) * speed * deltaTime,
+		(std::cos(yaw) * z + std::cos(yaw + HALF_PI) * x) * speed * deltaTime,
 		y * speed * deltaTime,
-		(std::sin(yaw) * z + std::sin(yaw + PI / 2) * x) * speed * deltaTime
+		(std::sin(yaw) * z + std::sin(yaw + HALF_PI) * x) * speed * deltaTime
 	);
 }
 
@@ -90,14 +93,46 @@ void Player::propogateMouseCallback(GLFWwindow* window, int* button, int* action
 	inputManager.mouseCallback(window, button, action, mods);
 }
 
+// void Player::castBlockRay(GameManager* gameManager) {
+// 	bool xDirection = !(yaw > PI / 2 && yaw < (PI * 3) / 4);
+// 	// bool yDirection = pitch > 0;
+// 	// bool zDirection = yaw > 0 && yaw < PI;
+//
+//
+// 	// Integer steps on the x axis
+// 	float xIntegerStep = xDirection ? std::ceil(position.x) - position.x : position.x - std::floor(position.x);
+// 	float zxSlope = std::tan(yaw);
+// 	float yxSlope = std::tan(pitch);
+// 	glm::vec3 xRayStep(position.x + xIntegerStep, position.y + zxSlope * xIntegerStep, position.z + yxSlope * xIntegerStep);
+// 	Block* xDetection = nullptr;
+//
+// 	for(int x = 0; xDetection == nullptr && glm::length(xRayStep) < std::pow(viewDistance, 2) && x < 10; x++) {
+// 		xDetection = gameManager->getBlock(xRayStep.x, xRayStep.y, xRayStep.z);
+// 		if(xDetection != nullptr) break;
+//
+// 		xRayStep.y += yxSlope;
+// 		xRayStep.z += zxSlope;
+//
+// 		// ImGui::Text("placing point at %f, %f, %f\n", xRayStep.x, xRayStep.y, xRayStep.z);
+// 		gameManager->debug.addDebugPoint(xRayStep.x, xRayStep.y, xRayStep.z);
+// 		xDetection = gameManager->getBlock(xRayStep.x, xRayStep.y, xRayStep.z);
+// 	}
+// 	ImGui::Text("Hello world");
+//
+// 	selectedBlock = xDetection;
+// 	selectedBlockCoords = glm::vec3(int(xRayStep.x), int(xRayStep.y), int(xRayStep.z));
+// }
+
 void Player::castBlockRay(GameManager* gameManager) {
 	Block* block;
+	ImGui::TextUnformatted("Hello world");
 	for(float a = 0; a < 1.0f; a += 0.01f) {
 		glm::vec3 reach(
 			position.x + (lookDir.x * viewDistance) * a,
 			position.y + (lookDir.y * viewDistance) * a,
 			position.z + (lookDir.z * viewDistance) * a
 		);
+		// ImGui::Text("Reach (%f, %f, %f)", reach.x, reach.y, reach.z);
 		block = gameManager->getBlock(
 			int(reach.x + 0.5),
 			int(reach.y + 0.5),

@@ -1,29 +1,5 @@
-#ifndef _GLOBALS_HPP
-#define _GLOBALS_HPP
-
-#define FULLSCREEN
-// #define ENABLE_MOUSE_CONTROLS
-#define DEBUG_MODE
-
-#ifndef FULLSCREEN
-const int WIDTH = 800;
-const int HEIGHT = 600;
-#else
-const int WIDTH = 1920;
-const int HEIGHT = 1080;
-#endif
-
-const int CHUNK_WIDTH = 16;
-const int BUILD_HEIGHT = 16;
-
-#ifndef ENABLE_MOUSE_CONTROLS
-const bool MOUSE_CONTROLS = false;
-#else
-const bool MOUSE_CONTROLS = true;
-#endif
-
-const int NOISE_FREQUENCY = 2;
-const int NOISE_OCTAVES = 2;
+#ifndef GLOBALS_HPP
+#define GLOBALS_HPP
 
 #define PI 3.14159f
 #define TWO_PI PI * 2
@@ -31,11 +7,21 @@ const int NOISE_OCTAVES = 2;
 #define QUARTER_PI (HALF_PI / 2.0f)
 #define THREE_QUARTERS_PI (QUARTER_PI * 3)
 
-#include <GLFW/glfw3.h>
+#include "Config.hpp"
+#include "Player.hpp"
+#include "GameManager.hpp"
+#include "GraphicsManager.hpp"
 
-namespace Global {
-	void propogateKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void propogateMouseCallback(GLFWwindow* window, int button, int action, int mods);
+inline GraphicsManager graphicsManager;
+inline GameManager gameManager;
+inline Player player((gameManager.worldWidth / 2) * CHUNK_WIDTH, 15, (gameManager.worldWidth / 2) * CHUNK_WIDTH, HALF_PI, 0.0f);;
+
+inline void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	player.inputManager.keyCallback(&key, &scancode, &action, &mods);
+}
+
+inline void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
+	player.inputManager.mouseCallback(&button, &action, &mods);
 }
 
 #endif

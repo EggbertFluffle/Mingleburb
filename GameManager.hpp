@@ -3,29 +3,23 @@
 #include <glm/glm.hpp>
 #include <forward_list>
 
-#include "Debug.hpp"
 #include "Block.hpp"
-#include "Chunk.hpp"
 #include "perlin.hpp"
+#include "Chunk.hpp"
 
 class GameManager {
 	Perlin::perlinOffsets* po;
 	
 public:
 	std::forward_list<Chunk> chunks;
+	glm::vec3 directionalLight;
 	float faceLuminence[6];
 	unsigned int worldWidth;
-
-	#ifdef DEBUG_MODE
-	Debug debug;
-	#endif
 	
 	GameManager();
-	void cullFaces(int x, int y, int z);
+	void cullFaces(const int x, const int y, const int z);
 	void cullSurroundingBlocks(glm::vec3& selectedBlockCoords);
 	void cullChunkFaces(Chunk* chunk);
-	Block* getBlock(int x, int y, int z);
-	Chunk* getChunk(int x, int y);
-
-	glm::vec3 directionalLight;
+	Block* const getBlock(const int x, const int y, const int z);
+	Chunk* const getChunk(const int x, const int y);
 };

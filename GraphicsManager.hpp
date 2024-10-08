@@ -4,16 +4,13 @@
 
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
-#include <forward_list>
 
-#include "GameManager.hpp"
-#include "Player.hpp"
-#include "Chunk.hpp"
 #include "stb_image.hpp"
 #include "Shader.hpp"
+#include "Chunk.hpp"
 
 class GraphicsManager {
-	unsigned int blockFaceVAOs[6];
+	std::array<unsigned int, 6> blockFaceVAOs;
 	int renderDistance;
 
 	void loadTexture(const char* name, const char* path);
@@ -29,14 +26,10 @@ public:
 	~GraphicsManager();
 	void initializeGLFW();
 
-	void bindTexture(int id);
-	void bindFace(int face);
-	void renderAllChunks(GameManager* gameManager, Player* player);
-	void renderChunk(int& i, std::forward_list<Chunk>::iterator it);
-
-	#ifdef DEBUG_MODE
-	void renderDebug(Debug* debug);
-	#endif
+	void bindTexture(const int id);
+	void bindFace(const int face);
+	void renderAllChunks();
+	void renderChunk(int& i, Chunk& c);
 
 	static void windowResizeCallback(GLFWwindow* window, int width, int height) {
 		glViewport(0, 0, width, height);

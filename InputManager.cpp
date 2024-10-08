@@ -1,29 +1,33 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <stdio.h>
+#include <stdexcept>
 
 #include "InputManager.hpp"
-#include "Globals.hpp"
+#include "Config.hpp"
 
-void InputManager::setKeyTrue(int key) {
+void InputManager::setKeyTrue(const int key) {
 	keyStates[key] = true;
 }
 
-void InputManager::setKeyFalse(int key) {
+void InputManager::setKeyFalse(const int key) {
 	keyStates[key] = false;
 }
 
-bool InputManager::getKeyState(int key) {
-	return keyStates[key];
+bool InputManager::getKeyState(const int key) const {
+	try {
+		return keyStates.at(key);
+	} catch(std::out_of_range err) {
+		return false;
+	}
 }
 
-bool InputManager::getMouseButton(int button) {
+bool InputManager::getMouseButtonPressed(const int button) {
 	switch(button) {
 		case GLFW_MOUSE_BUTTON_1:
-			return mouseButton1;
+			return mouseButton1Pressed;
 			break;
 		case GLFW_MOUSE_BUTTON_2:
-			return mouseButton2;
+			return mouseButton2Pressed;
 			break;
 		default: 
 			return false;
@@ -31,7 +35,21 @@ bool InputManager::getMouseButton(int button) {
 	}
 }
 
-void InputManager::keyCallback(GLFWwindow* window, int* key, int* scancode, int* action, int* mods) {
+bool InputManager::getMouseButtonDown(const int button) const {
+	switch(button) {
+		case GLFW_MOUSE_BUTTON_1:
+			return mouseButton1Down;
+			break;
+		case GLFW_MOUSE_BUTTON_2:
+			return mouseButton2Down;
+			break;
+		default: 
+			return false;
+			break;
+	}
+}
+
+void InputManager::keyCallback(int* key, int* scancode, int* action, int* mods) {
 	if (*action) {
 		setKeyTrue(*key);
 	} else {
@@ -39,13 +57,13 @@ void InputManager::keyCallback(GLFWwindow* window, int* key, int* scancode, int*
 	}
 }
 
-void InputManager::mouseCallback(GLFWwindow* window, int* button, int* action, int* mods) {
+void InputManager::mouseCallback(int* button, int* action, int* mods) {
 	switch(*button) {
 		case GLFW_MOUSE_BUTTON_1:
-			mouseButton1 = *action;
+			mouseButton1Down = *action;
 			break;
 		case GLFW_MOUSE_BUTTON_2:
-			mouseButton2 = *action;
+			mouseButton2Down = *action;
 			break;
 	}
 }

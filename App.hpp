@@ -1,17 +1,10 @@
 #pragma once
 
-#include "GraphicsManager.hpp"
-#include "GameManager.hpp"
-#include "Player.hpp"
-
 class App {
-public:
-	GameManager gameManager;
-	Player player;
-	GraphicsManager graphicsManager;
+	float previousTime;
+	float deltaTime;
 
-	App();
-	~App();
+public:
 	void run();
 	void init();
 };

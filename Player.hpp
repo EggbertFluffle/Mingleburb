@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 
 #include "InputManager.hpp"
-#include "GameManager.hpp"
 #include "Block.hpp"
 
 class Player {
@@ -14,7 +13,7 @@ class Player {
 	float viewDistance;
 	double previousTime;
 
-	void castBlockRay(GameManager* gameManager);
+	void castBlockRay();
 
 public:
 	InputManager inputManager;
@@ -23,18 +22,14 @@ public:
 	glm::vec3 lookDir;
 	float yaw;
 	float pitch;
-	bool mouseControls;
 	Block* selectedBlock;
 	glm::vec3 selectedBlockCoords;
-	double deltaTime;
 
 	Player();
-	Player(float x, float y, float z, float h, float p);
+	Player(const float x, const float y, const float z, const float h, const float p);
 
-	void update(GLFWwindow* window, GameManager* gameManager);
-	void getLookAt(glm::mat4 &view);
-	void propogateKeyCallback(GLFWwindow* window, int* key, int* scancode, int* action, int* mods);
-	void propogateMouseCallback(GLFWwindow* window, int* button, int* action, int* mods);
-	void moveLocal(float x, float y, float z);
-	void moveWorld(float x, float y, float z);
+	void update(float& deltaTime);
+	void getLookAt(glm::mat4& view);
+	void moveLocal(const float x, const float y, const float z, const float& deltaTime);
+	void moveWorld(const float x, const float y, const float z);
 };

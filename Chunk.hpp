@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Block.hpp"
-#include "Globals.hpp"
+#include "Config.hpp"
 #include "perlin.hpp"
 
 #include <glm/gtc/noise.hpp>
@@ -12,12 +12,12 @@ class Chunk {
 	std::array<Block, BUILD_HEIGHT * CHUNK_WIDTH * CHUNK_WIDTH> blocks;
 
 public:
-	glm::ivec2 coords;
+	const glm::ivec2 coords;
 	bool loaded;
 
-	Chunk(int x, int z);
-	Block* getBlock(int x, int y, int z);
-	void setBlock(int x, int y, int z, int blockId);
-	void setAir(int x, int y, int z);
+	Chunk(const int x, const int z);
+	Block* const getBlock(const int x, const int y, const int z);
+	void setBlock(const int x, const int y, const int z, const int blockId);
+	void setAir(const int x, const int y, const int z);
 	void generateNoise(Perlin::perlinOffsets* po);
 };
